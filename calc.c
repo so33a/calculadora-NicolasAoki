@@ -2,44 +2,95 @@
 #include <stdlib.h>
 #include <strings.h>
 #define MAX 1000
-struct pilha
-{
-    int t;      /* t é o topo da pilha -- proximo espaco vazio do vetor */
-    int v[MAX]; /* v é o vetor que armazena os elementos da pilha */
+
+typedef struct node * link;
+struct node {
+  int item;
+  link next;
 };
 
-/* Define um novo tipo de dado chamado Pilha que é um ponteiro para "struct pilha". */
-typedef struct pilha * Pilha;
+struct pilha {
+  link topo;
+};
 
-/* Aloca espaço para armazenar uma nova Pilha */
-Pilha novaPilha () {
-    Pilha p = malloc(sizeof(*p));
-    if (p == NULL)
-        {
-            printf("Algum erro aconteceu !\n");
-            exit(-1);
-        }
-    p->t = 0; /* devemos inicializar o topo com 0 */
+link novoNo (int item, link next) {
+  link n = malloc(sizeof (struct node));
+  if(n == NULL) {
+    printf ("Erro ao alocar no\n");
+    exit(-1);
+  }
+  n->item = item;
+  n->next = next;
+  return n;
+}
+Pilha novaPilha() {
+    Pilha p = malloc(sizeof (struct pilha));
+    if(p == NULL)
+        printf("erro na alocaÃ§Ã£o"); exit(-1);
+    p->topo = NULL;
     return p;
 }
-/* Libera memória de uma dada pilha p */
-void destroiPilha (Pilha p)
-{
+void push(Pilha p, int item){
+    link t = novoNo(item, NULL);
+    if(p->topo == NULL){
+        p->topo = t;
+        return;
+    }
+    t->next = p->topo;
+    p->topo = t;
+}
+int pop(Pilha p){
+    int aux;
+    link t;
+    if(p->topo == NULL)
+        printf("pilha vazia"); exit(-1);
+    aux = p->topo->item;
+    t = p->topo;
+    p->topo = t->next;
+    free(t);
+    return aux;
+}
+int estaVazia(Pilha p) {
+  return (p->topo == NULL);
+}
+int pegaTopo(Pilha p) {
+  if (p->topo == NULL) {
+    printf("Pilha vazia");
+    return 0;
+  }
+  return p->topo->item;
+}
+void destroiPilha(Pilha p){
+    while(!estaVazia(p)){
+        pop(p);
+    }
     free(p);
 }
-/* Operação de inserir novo elemento na pilha */
-void push (Pilha p, int valor) {
-    p->v[(p->t)++] = valor;
+void imprimePilha(Pilha p){
+    link t = p->topo;
+    while(t->next != NULL){
+        printf("%d", t->next);
+        t = t->next;
+    }
 }
-/* Operação de remover um elemento da pilha */
-int pop (Pilha p) {
-    return p->v[--(p->t)];
+int bemEncaixado(char *texto){
+
+    Pilha p = novaPilha();
+    int i, resultado = 1;
+    for(i=0; texto[i] != '\0'; i++){
+        if(texto[i] == '(') {
+            push(p,1);
+        }else if(texto[i] == ')'){
+            pop(p);
+        }
+    }
+    if (p->topo > 0)
+        resultado = 0;
+    destroiPilha(p);
+    return resultado;
 }
-/* Operação para pegar o elemento do topo da pilha */
-int topo (Pilha p) {
-    return p->v[p->t - 1];
-}
-/* Transforma a notação infixa para a notação posfixa */
+
+/* Transforma a notaÃ§Ã£o infixa para a notaÃ§Ã£o posfixa */
 int infixoParaPosfixo (char * entrada, char * saida, int n)
 {
     Pilha p = novaPilha();
@@ -166,7 +217,7 @@ int calcula ( char * s ) {
 
 
 
-/* Exemplo de utilização */
+/* Exemplo de utilizaÃ§Ã£o */
 int main () {
     char infixo[255] ;
     char posfixo[255];
