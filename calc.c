@@ -56,7 +56,7 @@ int estaVazia(Pilha p) {
 int pegaTopo(Pilha p) {
   if (p->topo == NULL) {
     printf("Pilha vazia");
-    return 0;
+    exit(-1);
   }
   return p->topo->item;
 }
@@ -73,14 +73,17 @@ void imprimePilha(Pilha p){
         t = t->next;
     }
 }
-int bemEncaixado(char *texto){
+int bemEncaixado(char *s){
 
     Pilha p = novaPilha();
     int i, resultado = 1;
-    for(i=0; texto[i] != '\0'; i++){
+    for(i=0; s[i] != '\0'; i++){
         if(texto[i] == '(') {
             push(p,1);
-        }else if(texto[i] == ')'){
+        }else if(s[i] == ')'){
+          if(p->topo == NULL)  
+            resultado = 0;
+          else 
             pop(p);
         }
     }
@@ -150,30 +153,7 @@ int infixoParaPosfixo (char * entrada, char * saida, int n)
     return 0;
 }
 
-int bemEncaixado (char* s) {
-    Pilha p = novaPilha();
-    int i;
-    int resultado = 1;
-    for(i = 0; s[i] != '\0'; i++) {
-        if(s[i] == '(') {
-            if(p->t >= MAX) {
-                resultado = 0;
-                break;
-            }
-            push(p, 1);
-        } else if (s[i] == ')') {
-            if(p->t <= 0) {
-                resultado = 0;
-                break;
-            }
-            pop(p);
-        }
-    }
-    if(p->t > 0)
-        resultado = 0;
-    destroiPilha(p);
-    return resultado;
-}
+
 
 
 int calcula ( char * s ) {
